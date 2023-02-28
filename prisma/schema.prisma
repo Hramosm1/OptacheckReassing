@@ -1,0 +1,384 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URLS")
+}
+
+model counter_type {
+  counter_type_id         Int                       @id(map: "PK__counter___15047BF17DB195D1") @db.SmallInt
+  description             String?                   @db.VarChar(50)
+  state                   Boolean?
+  load_missions_header    load_missions_header[]
+  load_missions_header_bk load_missions_header_bk[]
+}
+
+model load_missions_header {
+  optacheck_id    String                    @id(map: "PK__load_mis__773178844C7E3F66") @db.VarChar(50)
+  company_id      Int?                      @db.SmallInt
+  process_id      BigInt?
+  address_id      BigInt?
+  account_number  String?                   @db.VarChar(50)
+  client_name     String?                   @db.VarChar(250)
+  created_date    DateTime?                 @db.DateTime
+  modified_date   DateTime?                 @db.DateTime
+  user_email      String?                   @db.VarChar(50)
+  user_id         Int?                      @db.SmallInt
+  result          String?                   @db.VarChar(50)
+  detail          String?                   @db.VarChar(50)
+  detail_code     Int?                      @db.SmallInt
+  situation_code  Int?                      @db.SmallInt
+  mission_detail  String?                   @db.VarChar(1000)
+  sn_save_mission Boolean?
+  address_type    String?                   @db.VarChar(50)
+  address_counter String?                   @db.VarChar(500)
+  promise_date    DateTime?                 @db.Date
+  promise_amount  Float?                    @db.Money
+  coordinate      Unsupported("geography")?
+  route_id        Int?                      @db.SmallInt
+  counter_type_id Int?                      @db.SmallInt
+  counter_type    counter_type?             @relation(fields: [counter_type_id], references: [counter_type_id], onDelete: NoAction, onUpdate: NoAction, map: "FK__load_miss__count__361203C5")
+
+  @@index([address_id], map: "indx_load_missions_header__address_id")
+  @@index([company_id], map: "indx_load_missions_header__company_id")
+  @@index([modified_date], map: "indx_load_missions_header__date_modified")
+  @@index([optacheck_id], map: "indx_optacheck_id")
+  @@index([process_id, detail_code], map: "IX_Process_Detail")
+}
+
+model load_missions_header_bk {
+  optacheck_id    String                    @id(map: "PK__load_mis__77317884D3331B52") @db.VarChar(50)
+  company_id      Int?                      @db.SmallInt
+  process_id      BigInt?
+  address_id      BigInt?
+  account_number  String?                   @db.VarChar(50)
+  client_name     String?                   @db.VarChar(250)
+  created_date    DateTime?                 @db.DateTime
+  modified_date   DateTime?                 @db.DateTime
+  user_email      String?                   @db.VarChar(25)
+  user_id         Int?                      @db.SmallInt
+  result          String?                   @db.VarChar(50)
+  detail          String?                   @db.VarChar(50)
+  detail_code     Int?                      @db.SmallInt
+  situation_code  Int?                      @db.SmallInt
+  mission_detail  String?                   @db.VarChar(1000)
+  sn_save_mission Boolean?
+  address_type    String?                   @db.VarChar(50)
+  address_counter String?                   @db.VarChar(500)
+  promise_date    DateTime?                 @db.Date
+  promise_amount  Float?                    @db.Money
+  coordinate      Unsupported("geography")?
+  route_id        Int?                      @db.SmallInt
+  counter_type_id Int?                      @db.SmallInt
+  counter_type    counter_type?             @relation(fields: [counter_type_id], references: [counter_type_id], onDelete: NoAction, onUpdate: NoAction, map: "FK__load_miss__count__361204C5")
+
+  @@index([address_id], map: "indx_load_missions_header_bk__address_id")
+  @@index([company_id], map: "indx_load_missions_header_bk__company_id")
+  @@index([modified_date], map: "indx_load_missions_header_bk__date_modified")
+  @@index([address_id], map: "indx_load_missions_header_bk_bk__address_id")
+  @@index([company_id], map: "indx_load_missions_header_bk_bk__company_id")
+  @@index([modified_date], map: "indx_load_missions_header_bk_bk__date_modified")
+  @@index([address_id], map: "indx_load_missions_header_bk_bk_bk__address_id")
+  @@index([company_id], map: "indx_load_missions_header_bk_bk_bk__company_id")
+  @@index([modified_date], map: "indx_load_missions_header_bk_bk_bk__date_modified")
+}
+
+model load_optacheck_key {
+  address_id   BigInt
+  optacheck_id String   @id(map: "pk_ws_optacheck_key") @db.VarChar(50)
+  state        String?  @db.VarChar(50)
+  created_date DateTime @db.DateTime
+  user_email   String?  @db.VarChar(100)
+  workspace    String?  @db.VarChar(50)
+
+  @@index([address_id, created_date], map: "idx_load_optacheck_key")
+  @@index([created_date], map: "IX_Address_User")
+  @@index([state, workspace, created_date], map: "IX_State")
+}
+
+model load_optacheck_key_duplicate {
+  key_id       BigInt   @id(map: "pk_ws_optacheck_key_duplicate") @default(autoincrement())
+  address_id   BigInt
+  optacheck_id String   @db.VarChar(50)
+  state        String?  @db.VarChar(50)
+  created_date DateTime @db.DateTime
+  user_email   String?  @db.VarChar(100)
+  is_historic  Boolean
+  is_new       Boolean
+}
+
+model load_optacheck_key_failure {
+  Id           String    @id(map: "PK__load_opt__3214EC07A6F2EE82") @db.UniqueIdentifier
+  AddressId    BigInt?
+  ErrorMessage String?   @db.VarChar(Max)
+  WorkSpace    String?   @db.VarChar(50)
+  fail_date    DateTime? @db.DateTime
+}
+
+model load_process_data {
+  data_id             Int                  @id(map: "PK_load_process_data") @default(autoincrement())
+  process_id          Int?
+  json_data           String?              @db.NVarChar(Max)
+  load_process_header load_process_header? @relation(fields: [process_id], references: [process_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_load_process_data_process")
+}
+
+model load_process_data_bk {
+  data_id             Int                  @id(map: "PK_load_process_data_bk") @default(autoincrement())
+  process_id          Int?
+  json_data           String?              @db.NVarChar(Max)
+  load_process_header load_process_header? @relation(fields: [process_id], references: [process_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_load_process_data_process_bk")
+}
+
+model load_process_header {
+  process_id           Int                    @id(map: "PK_load_process_header") @default(autoincrement())
+  description          String?                @db.VarChar(200)
+  execution_time       DateTime?              @db.DateTime
+  execution_start      DateTime?              @db.DateTime
+  execution_finish     DateTime?              @db.DateTime
+  process_state        Int?
+  process_task_id      Int?
+  execution_error      String?                @db.NVarChar(Max)
+  Workspace_Id         Int?
+  optacheck_workspace  optacheck_workspace?   @relation(fields: [Workspace_Id], references: [Workspace_Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_load_process_optacheck_key")
+  load_process_data    load_process_data[]
+  load_process_data_bk load_process_data_bk[]
+
+  @@index([process_state, process_task_id, execution_time], map: "IX_Process")
+}
+
+model optacheck_workspace {
+  Workspace_Id        Int                   @id(map: "PK_optacheck_workspace") @default(autoincrement())
+  Description         String?               @db.VarChar(100)
+  Workspace_Key       String                @unique(map: "UN_optacheck_workspace") @db.VarChar(100)
+  Logged_Access_Token String                @db.VarChar(100)
+  User_Access_Token   String                @db.VarChar(100)
+  Url                 String                @db.VarChar(200)
+  Endpoint            String?               @db.VarChar(30)
+  Form                String?               @db.VarChar(100)
+  AssignSource        String?               @db.VarChar(50)
+  ReassignSource      String?               @db.VarChar(50)
+  DeleteSource        String?               @db.VarChar(50)
+  UpdateSource        String?               @db.VarChar(50)
+  State               Boolean
+  load_process_header load_process_header[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model process_task_daily {
+  process_task_id    Int       @default(autoincrement())
+  process_task_name  String    @db.VarChar(50)
+  execute_time       DateTime? @db.Time
+  process_task_state Boolean?
+
+  @@ignore
+}
+
+model sic_result {
+  company_id         Int      @db.SmallInt
+  description        String   @db.VarChar(50)
+  detail_code        Int      @db.SmallInt
+  situation_code     Int?     @db.SmallInt
+  state              Boolean?
+  result_description String?  @db.VarChar(50)
+
+  @@id([company_id, description, detail_code], map: "pk_sic_result")
+}
+
+model Sys_UltNroTabla {
+  TableName  String  @id(map: "PK_Sys_UltNroTabla") @db.VarChar(256)
+  UltNro     BigInt?
+  UltNroTemp BigInt?
+}
+
+model SysActionType {
+  Id          Int      @id(map: "PK__SysActio__3214EC077D24E114") @default(autoincrement())
+  Description String   @db.VarChar(Max)
+  State       Boolean  @default(true, map: "DF__SysAction__State__4CA06362")
+  SysLog      SysLog[]
+}
+
+model SysIcon {
+  Id      Int       @id(map: "PK__SysIcon__3214EC076FE94AEF") @default(autoincrement())
+  Name    String    @db.VarChar(50)
+  Class   String    @db.VarChar(50)
+  Status  Boolean?
+  SysMenu SysMenu[]
+}
+
+model SysLog {
+  Id            Int           @id(map: "PK__SysLog__3214EC07BA1AD584") @default(autoincrement())
+  UserId        Int
+  LogTypeId     Int
+  ActionTypeId  Int
+  FileName      String        @db.VarChar(Max)
+  MethodName    String        @db.VarChar(Max)
+  Description   String        @db.VarChar(Max)
+  DTOIn         String        @db.VarChar(Max)
+  DTOOut        String        @db.VarChar(Max)
+  Date          DateTime      @default(now(), map: "DF__SysLog__Date__4D94879B") @db.DateTime
+  SysActionType SysActionType @relation(fields: [ActionTypeId], references: [Id], onUpdate: NoAction, map: "FK__SysLog__ActionTy__52593CB8")
+  SysLogType    SysLogType    @relation(fields: [LogTypeId], references: [Id], onUpdate: NoAction, map: "FK__SysLog__LogTypeI__5165187F")
+  SysUser       SysUser       @relation(fields: [UserId], references: [Id], onUpdate: NoAction, map: "FK__SysLog__UserId__5070F446")
+}
+
+model SysLogType {
+  Id          Int      @id(map: "PK__SysLogTy__3214EC07638CD847") @default(autoincrement())
+  Description String   @db.VarChar(Max)
+  State       Boolean  @default(true, map: "DF__SysLogTyp__State__4E88ABD4")
+  SysLog      SysLog[]
+}
+
+model SysMenu {
+  Id           Int            @id(map: "PK__SysMenu__3214EC07FA5B5D8E") @default(autoincrement())
+  Name         String         @db.VarChar(100)
+  Action       String?        @db.VarChar(25)
+  Controller   String?        @db.VarChar(25)
+  Url          String?        @db.VarChar(300)
+  IdIcon       Int?
+  IdTop        Int?
+  Status       Boolean?
+  SysIcon      SysIcon?       @relation(fields: [IdIcon], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK__SysMenu__IdIcon__534D60F1")
+  SysRolAccess SysRolAccess[]
+}
+
+model SysRol {
+  Id           Int            @id(map: "PK__SysRol__3214EC0723FC30A0") @default(autoincrement())
+  Name         String         @db.VarChar(150)
+  Status       Boolean?
+  SysRolAccess SysRolAccess[]
+  SysUserRol   SysUserRol[]
+}
+
+model SysRolAccess {
+  Id          Int      @id(map: "PK__SysRolAc__3214EC07562532DB") @default(autoincrement())
+  IdRol       Int?
+  IdMenu      Int?
+  AllowCreate Boolean?
+  AllowModify Boolean?
+  AllowDelete Boolean?
+  AllowView   Boolean?
+  Status      Boolean?
+  SysMenu     SysMenu? @relation(fields: [IdMenu], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK__SysRolAcc__IdMen__5441852A")
+  SysRol      SysRol?  @relation(fields: [IdRol], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK__SysRolAcc__IdRol__5535A963")
+}
+
+model SysUser {
+  Id              Int            @id(map: "PK__SysUser__3214EC07B3FEBEEB") @default(autoincrement())
+  Name            String         @db.VarChar(200)
+  User            String         @db.VarChar(20)
+  Password        String         @db.VarChar(500)
+  CreationDate    DateTime?      @db.DateTime
+  RemovalDate     DateTime?      @db.DateTime
+  Status          Boolean?
+  RenewalPassDate DateTime?      @db.DateTime
+  LoginAttemps    Int?           @db.TinyInt
+  IdPerson        Int?
+  SysLog          SysLog[]
+  SysUserRol      SysUserRol[]
+  SysUserToken    SysUserToken[]
+}
+
+model SysUserRol {
+  RolId   Int
+  UserId  Int
+  SysRol  SysRol  @relation(fields: [RolId], references: [Id], onUpdate: NoAction, map: "FK_SysUserRol_Rol")
+  SysUser SysUser @relation(fields: [UserId], references: [Id], onUpdate: NoAction, map: "FK_SysUserRol_User")
+
+  @@id([RolId, UserId], map: "PK_SysUserRol")
+}
+
+model SysUserToken {
+  Id             Int       @id(map: "PK__SysUserT__3214EC07EEE8D3AD") @default(autoincrement())
+  IdUser         Int?
+  Token          String?   @db.VarChar(Max)
+  CreationDate   DateTime? @db.DateTime
+  LastUpdateDate DateTime? @db.DateTime
+  SysUser        SysUser?  @relation(fields: [IdUser], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK__SysUserTo__IdUse__5812160E")
+}
+
+model ticket_workspace {
+  workspace_id Int     @db.SmallInt
+  ticket_id    Int     @db.SmallInt
+  name_ticket  String? @db.VarChar(150)
+  logo         String? @db.VarChar(Max)
+  texto        String? @db.VarChar(Max)
+
+  @@id([workspace_id, ticket_id], map: "pk_workspace_ticket")
+}
+
+model ToolKit_Mensajes_sms {
+  IdMensajeriaTigo      BigInt                 @id(map: "PK__ToolKit___8DD2DA781E512A0A") @default(autoincrement())
+  IdMensaje             String?                @db.VarChar(100)
+  IdUnidadNegocio_Tigo  Int?                   @db.SmallInt
+  Type                  String?                @db.VarChar(10)
+  Billed                Boolean?
+  Control               Boolean?
+  Protocol              String?                @db.VarChar(10)
+  Flow                  Int?
+  Priority              Int?
+  Status                Int?
+  Weight                Int?
+  ShortcodeId           String?                @db.VarChar(50)
+  ShortcodeType         String?                @db.VarChar(50)
+  Msisdn                String?                @db.VarChar(15)
+  Body                  String?                @db.NVarChar(250)
+  Scheduled             Boolean?
+  ScheduledStart        DateTime?              @db.DateTime
+  CreatedBy             String?                @db.VarChar(50)
+  CreatedDate           DateTime?              @db.DateTime
+  SentAt                DateTime?              @db.DateTime
+  FechaIngreso          DateTime?              @db.DateTime
+  Toolkit_UnidadNegocio Toolkit_UnidadNegocio? @relation(fields: [IdUnidadNegocio_Tigo], references: [IdUnidadNegocio], onDelete: NoAction, onUpdate: NoAction, map: "FK_MensajeriaTigo_UnidadNegocio")
+}
+
+model Toolkit_Organizacion_Tigo {
+  IdOrganizacion        Int                     @id(map: "PK__Toolkit___07D4D839F38F795A") @db.SmallInt
+  Id                    String?                 @db.VarChar(100)
+  Nombre                String?                 @db.VarChar(100)
+  FechaCreacion         DateTime?               @db.DateTime
+  FechaModificacion     DateTime?               @db.DateTime
+  Estado                Boolean?
+  Marcacion             String?                 @db.VarChar(15)
+  Toolkit_UnidadNegocio Toolkit_UnidadNegocio[]
+}
+
+model Toolkit_UnidadNegocio {
+  IdUnidadNegocio           Int                        @id(map: "PK__Toolkit___E33E25952AC2AA6A") @db.SmallInt
+  Id                        String?                    @db.VarChar(100)
+  IdOrganizacion            Int?                       @db.SmallInt
+  Nombre                    String?                    @db.VarChar(100)
+  NombreCorto               String?                    @db.VarChar(50)
+  FechaCreacion             DateTime?                  @db.DateTime
+  FechaModificacion         DateTime?                  @db.DateTime
+  Estado                    Boolean?
+  idEmpresa                 Int?                       @db.SmallInt
+  Toolkit_Organizacion_Tigo Toolkit_Organizacion_Tigo? @relation(fields: [IdOrganizacion], references: [IdOrganizacion], onDelete: NoAction, onUpdate: NoAction, map: "FK_UnidadNegocio_Organizacion")
+  ToolKit_Mensajes_sms      ToolKit_Mensajes_sms[]
+}
+
+model vozy {
+  id         String    @id(map: "PK__vozy__3213E83F2C1F59B3") @default(dbgenerated("newid()"), map: "DF__vozy__id__39AD8A7F") @db.UniqueIdentifier
+  jsonData   String    @db.VarChar(Max)
+  contactId  String?   @db.VarChar(150)
+  campaignId String?   @db.VarChar(150)
+  sessionId  String?   @db.VarChar(150)
+  fecha      DateTime? @default(now(), map: "DF__vozy__fecha__4AD81681") @db.DateTime
+}
+
+model sic_razonMora {
+  company_id  Int      @db.SmallInt
+  description String   @db.VarChar(50)
+  razon_code  Int      @db.SmallInt
+  state       Boolean?
+
+  @@id([company_id, description, razon_code], map: "pk_sic_razonMora")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model ws_registro {
+  texto String? @db.VarChar(255)
+
+  @@ignore
+}
